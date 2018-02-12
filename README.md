@@ -16,6 +16,7 @@ Zipped input/ zipped output:
     awk '/^ / { comm = $3 } /^[0-9]/ { print comm ";" $2, $1 }'|gzip | curl --data-binary @- -H "Content-Type: gzip" -H "Accept-Encoding: gzip" localhost:8080/api/generate`
 
 Zipped vs Unziped input chunks comparison
+
 [16670] | [65536, 65536, 65536, 65536, 65536, 65536, 65536, 65536, 59660]
 
 Todo: server side rendering with http://handlebarsjs.com/precompilation.html

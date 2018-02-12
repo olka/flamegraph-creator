@@ -8,6 +8,7 @@ var zlib        = require('zlib');
 var url         = require('url');
 const crypto = require('crypto');
 
+const PORT = process.env.PORT || 8080
 const sha256 = x => crypto.createHash('sha256').update(x, 'utf8').digest('hex');
 const constructPage = data => template+data + "  }</script> </body></html>";
 const encodeUrl = req => url.format({protocol: req.protocol,
@@ -59,5 +60,5 @@ router.post('/generate', function(req, res) {
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
-var server = app.listen(8080);
+var server = app.listen(PORT);
 console.log('Listening on port: ' + server.address().port);
