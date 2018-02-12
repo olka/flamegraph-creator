@@ -6,7 +6,8 @@ var http        = require('http');
 var app         = express();
 var zlib        = require('zlib');
 var url         = require('url');
-const crypto = require('crypto');
+var path        = require('path');
+const crypto    = require('crypto');
 
 const PORT = process.env.PORT || 8080
 const sha256 = x => crypto.createHash('sha256').update(x, 'utf8').digest('hex');
@@ -15,9 +16,10 @@ const encodeUrl = req => url.format({protocol: req.protocol,
                          host: req.get('host'), pathname: req.originalUrl })+ "/"+ req.cookie;
 
 var serviceName = "flamegraph-generator";
-const template = fs.readFileSync('template.html', 'utf8');
+const template = fs.readFileSync('dist/template.html', 'utf8');
 var storage = new Map();
 
+app.use('/dist', express.static(path.join(__dirname,'dist')));
 app.use(compression());
 
 app.use(function(req, res, next) {
@@ -49,6 +51,10 @@ var router = express.Router();
 
 router.get('/generate/:hash', function(req, res) {
     res.send(constructPage(storage.get(req.params.hash)));
+});
+
+router.get('/download/:hash', function(req, res) {
+    res.send(storage.get(req.params.hash));
 });
 
 router.post('/generate', function(req, res) {
