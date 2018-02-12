@@ -15,6 +15,10 @@ const constructPage = data => template+data + "  }</script> </body></html>";
 const encodeUrl = req => url.format({protocol: req.protocol,
                          host: req.get('host'), pathname: req.originalUrl })+ "/"+ req.cookie;
 
+
+const generateUrl = req => url.format({protocol: req.protocol,
+                            host: req.get('host'), pathname: "api/generate" })+ "/"+ req.cookie;
+   
 var serviceName = "flamegraph-generator";
 const template = fs.readFileSync('dist/template.html', 'utf8');
 var storage = new Map();
@@ -55,6 +59,12 @@ router.get('/generate/:hash', function(req, res) {
 
 router.get('/download/:hash', function(req, res) {
     res.send(storage.get(req.params.hash));
+});
+
+router.post('/push', function(req, res) {
+    if(!storage.has(req.cookie))
+        storage.set(req.cookie, req.body); 
+    res.send(generateUrl(req));
 });
 
 router.post('/generate', function(req, res) {
