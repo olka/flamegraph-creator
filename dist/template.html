@@ -105,7 +105,7 @@
       .width(1000)
       .transitionEase(d3.easeExpOut)
       .sort(true)
-      .color(function(d) {  return d.highlight ? "#eeeeee": colorHash(d.data.n);})
+      .color(function(d) {  return d.highlight ? "#e86af0": colorHash(d.data.n);})
       //Example to sort in reverse order
       //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("");
@@ -115,7 +115,7 @@
       .direction("s")
       .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
-      .html(function(d) { return "name: " + d.data.n + ", value: " + d.data.v; });
+      .html(function(d) { return  d.data.n  +" " + ((d.data.v/getData().v)*100).toFixed(1)+"%"; });
 
     flameGraph.tooltip(tip);
 
