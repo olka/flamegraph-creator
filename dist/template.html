@@ -106,7 +106,7 @@
       .minFrameSize(2)
       .cellHeight(20)
       .height(Number(getData().v)-120)
-      .transitionEase(d3.easeCubic)
+      .transitionEase(d3.easePolyOut)
       .sort(true)
       .color(function(d) {  return d.highlight ? "#eeeeee": colorHash(d.data.n);})
       //Example to sort in reverse order
