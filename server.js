@@ -10,18 +10,13 @@ var path        = require('path');
 const crypto    = require('crypto');
 
 const PORT = process.env.PORT || 8080
-const sha256 = x => crypto.createHash('sha256').update(x, 'utf8').digest('hex');
-const constructPage = data => template+data + "  }</script> </body></html>";
-const encodeUrl = req => url.format({protocol: req.protocol,
-                         host: req.get('host'), pathname: req.originalUrl })+ "/"+ req.cookie;
+const storage = new Map();
 
-
-const generateUrl = req => url.format({protocol: req.protocol,
-                            host: req.get('host'), pathname: "api/generate" })+ "/"+ req.cookie;
-   
-var serviceName = "flamegraph-generator";
 const template = fs.readFileSync('dist/template.html', 'utf8');
-var storage = new Map();
+const constructPage = data => template+data + "  }</script> </body></html>";
+const sha256 = x => crypto.createHash('sha256').update(x, 'utf8').digest('hex');
+const encodeUrl = req => url.format({protocol: req.protocol,
+    host: req.get('host'), pathname: "api/generate" })+ "/"+ req.uid;
 
 app.use('/dist', express.static(path.join(__dirname,'dist')));
 app.use(compression());
@@ -32,7 +27,7 @@ app.use(function(req, res, next) {
      
     req.addListener("end", function() {
         buffer = Buffer.concat(data);
-        req.cookie = sha256(buffer.length+req.ip+req.header("user-agent"));
+        req.uid = sha256(buffer.length+req.ip+req.header("user-agent"));
         //unzip request body
         if("gzip" === req.header("Content-Type")){
             zlib.gunzip(buffer, function(err, result) {
@@ -62,16 +57,19 @@ router.get('/download/:hash', function(req, res) {
 });
 
 router.post('/push', function(req, res) {
-    if(!storage.has(req.cookie))
-        storage.set(req.cookie, req.body); 
-    res.send(generateUrl(req));
+    storeGraphData(req.uid, req.body)
+    res.send(encodeUrl(req));
 });
 
 router.post('/generate', function(req, res) {
-    if(!storage.has(req.cookie))
-        storage.set(req.cookie, stack.folded(req.body)); 
+    storeGraphData(req.uid, stack.folded(req.body))
     res.send(encodeUrl(req));
 });
+
+function storeGraphData(uid, data){
+    if(!storage.has(uid)) 
+        storage.set(uid, data);
+}
 
 // all of our routes will be prefixed with /api
 app.use('/api', router);
