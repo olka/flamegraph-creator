@@ -43,11 +43,10 @@ Node.prototype.serialize = function() {
 
 exports.folded = function(data) {
     var root = new Node('root');
-    data.split("\n").map(function (val) {
-      var regex = /(.*) (.*)/g;
+    var regex = /(.*) (.*)/g;
+    data.split("\n").map(function (val) {   
       var matches = regex.exec(val);
-      if (matches) root.add(matches[1].split(";"), parseInt(matches[2]));
-        // setTimeout(() => root.add(matches[1].split(";"), parseInt(matches[2])), 0 );
+      if (matches) root.add(matches[1].split(";"), parseInt(matches[2]));        
     });
     return JSON.stringify(root.serialize());
 }

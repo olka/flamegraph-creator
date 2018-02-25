@@ -56,15 +56,16 @@ router.get('/download/:hash', function(req, res) {
     res.send(storage.get(req.params.hash));
 });
 
-router.post('/push', function(req, res) {
-    storeGraphData(req.uid, req.body)
+router.post('/generate', function(req, res) {     
+    const graphData =  isJson(req.body)? req.body : stack.folded(req.body)
+    storeGraphData(req.uid, graphData)
     res.send(encodeUrl(req));
 });
 
-router.post('/generate', function(req, res) {
-    storeGraphData(req.uid, stack.folded(req.body))
-    res.send(encodeUrl(req));
-});
+function isJson(input) {
+    try {JSON.parse(input); return true;} 
+    catch (e) {return false;}
+}
 
 function storeGraphData(uid, data){
     if(!storage.has(uid)) 
