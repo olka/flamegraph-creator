@@ -13,6 +13,7 @@ Zipped input/ zipped output:
 perf script | perl stackcollapse-perf.pl |gzip | curl --data-binary @- -H "Content-Type: gzip" -H "Accept-Encoding: gzip" localhost:8080/api/generate`
 
 Plain text vs Zipped input time comparison (file size: 825 kb)
+
 |Action              | Plain      | Zipped     |
 ---------------------|------------|-------------
 |time_namelookup:    |0.005       | 0.005      |
