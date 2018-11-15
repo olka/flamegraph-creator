@@ -41,10 +41,18 @@ Node.prototype.serialize = function() {
   return res;
 }
 
+function parseBpfStack(data) {
+  return data.split('@[').slice(1).map(line=>line.split('\n')
+    .filter(s=>s.trim().length>0).map(s=>s.startsWith(']:')?s.slice(3) : s))
+    .filter(arr=>arr.length>1).map(arr=>arr.slice(0,arr.length - 1)
+    .reverse().join(";")+" "+arr[arr.length - 1]).join("\n");
+}
+
 exports.folded = function(data) {
+    data = data.indexOf("@[") > 0 ? parseBpfStack(data) : data;
     var root = new Node('root');
-    var regex = /(.*) (.*)/g;
     data.split("\n").map(function (val) {   
+      var regex = /(.*) (.*)/g;
       var matches = regex.exec(val);
       if (matches) root.add(matches[1].split(";"), parseInt(matches[2]));        
     });
