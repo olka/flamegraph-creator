@@ -1,8 +1,8 @@
 var express     = require('express');
+const http     = require('http');
 var compression = require('compression')
 var fs          = require('fs');
 var stack       = require('./stackParser')
-var http        = require('http');
 var app         = express();
 var zlib        = require('zlib');
 var url         = require('url');
@@ -23,7 +23,7 @@ app.use(compression());
 
 app.use(function(req, res, next) {
     var data = [];
-    req.addListener("data", chunk => data.push(new Buffer(chunk)));
+    req.addListener("data", chunk => data.push(chunk));
      
     req.addListener("end", function() {
         buffer = Buffer.concat(data);
@@ -33,6 +33,7 @@ app.use(function(req, res, next) {
             zlib.gunzip(buffer, function(err, result) {
                 if (!err) {
                     req.body = result.toString();
+                    console.log("ungzipped!")
                     next();
                 } else {
                     next(err);
@@ -63,12 +64,11 @@ router.post('/generate', function(req, res) {
 });
 
 function isJson(input) {
-    try {JSON.parse(input); return true;} 
-    catch (e) {return false;}
+    return input.startsWith("{") && input.endsWith("}");
 }
 
 function storeGraphData(uid, data){
-    if(!storage.has(uid)) 
+    if(!storage.has(uid))
         storage.set(uid, data);
 }
 
